@@ -21,10 +21,10 @@ public class Main extends World {
 //    boolean sDown = false;
 
     public Main() {
-        super(600, 600, 1, false);
+        super(550, 500, 1, false);
         image = new GreenfootImage("background.png");
         wallTexture = new GreenfootImage("wallTexture.png");
-        image.scale(image.getWidth() * 10, image.getHeight() * 10);
+        image.scale(image.getWidth() * 8, image.getHeight() * 8);
         background = getBackground();
         init();
     }
@@ -51,9 +51,18 @@ public class Main extends World {
 //        background.getFont().deriveFont(30);
 //        background.drawString(distance + "", 0, 30);
 //        drawRay((int) x, (int) y);
-        Color color = new Color((int) (i * 1.5), i, (int) (255 - (255 * (distance / 1000.0))));
-        background.setColor(color);
-        int drawHeight = 4000 / (distance + 1);
+//        Color color = new Color((int) (i * 1.5), i, (int) (255 - (255 * (distance / 1000.0))));
+//        background.setColor(color);
+//        double f = 64;
+//        double v = 40 / f;
+//        double G = 200;
+//        double b = 1;
+        double g = Math.sqrt(Math.pow(getWidth(), 2) + Math.pow(getHeight(), 2)) * (1.0 / Math.sqrt(Math.pow(image.getWidth(), 2) + Math.pow(image.getHeight(), 2)) * distance);
+        double B = (getHeight() * 3) / g;
+        int drawScale = getHeight() * (getHeight() / 80);
+//        drawHeight = B
+//        int drawHeight = 4000 / (distance + 1);
+        int drawHeight = (int) B;
         for (int j = 0; j < getWidth() / fov; j++) {
 //                background.drawLine((getWidth() / fov * i) + j, (getHeight() / 2) - (drawHeight / 2), (getWidth() / fov * i) + j, (getHeight() / 2) + (drawHeight / 2));
             drawWallLine((getWidth() / fov * i) + j, drawHeight, (int) x, (int) y, distance);
@@ -93,13 +102,19 @@ public class Main extends World {
             if (y < 0 || y > getHeight()) {
                 break;
             }
-            int scale = image.getWidth() / wallTexture.getWidth();
+            double scale = (double) image.getWidth() / (double) wallTexture.getWidth();
             int verticalShadow = (int) (255 * (i / (height * 1.0)));
-            int distanceShadow = (int) (255 * (distance / 1000.0));
-            Color textureColor = wallTexture.getColorAt(((dx * scale) + (dy * scale)) / 2 % wallTexture.getWidth(), (i * wallTexture.getHeight()) / height);
-            int red = (textureColor.getRed() + verticalShadow + distanceShadow) / 3;
-            int green = (textureColor.getGreen() + verticalShadow + distanceShadow) / 3;
-            int blue = (textureColor.getBlue() + verticalShadow + distanceShadow) / 3;
+//            value should be between 0 and 255 and get darker the larger distance is
+            double distanceShadow = (distance / (image.getWidth() / 2.0) * 2.0);
+            Color textureColor = wallTexture.getColorAt(((int) (dx * scale) + (int) (dy * scale)) / 2 % wallTexture.getWidth(), i*wallTexture.getHeight()/height % wallTexture.getHeight());
+            int verticalShadowIntensity = 3;
+            int distanceShadowIntensity = 3;
+            int textureColorIntensity = 4;
+            int red = textureColor.getRed() - (int) (textureColor.getRed() * distanceShadow);
+            int green = textureColor.getGreen() - (int) (textureColor.getGreen() * distanceShadow);
+            int blue = textureColor.getBlue() - (int) (textureColor.getBlue() * distanceShadow);
+//            int green = ((textureColor.getGreen() * textureColorIntensity) + (verticalShadow * verticalShadowIntensity) + (distanceShadow * distanceShadowIntensity)) / (verticalShadowIntensity + distanceShadowIntensity + textureColorIntensity);
+//            int blue = ((textureColor.getBlue() * textureColorIntensity) + (verticalShadow * verticalShadowIntensity) + (distanceShadow * distanceShadowIntensity)) / (verticalShadowIntensity + distanceShadowIntensity + textureColorIntensity);
             Color color = new Color(red, green, blue);
             background.setColorAt(x, y, color);
         }
