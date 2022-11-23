@@ -12,6 +12,7 @@ import static util.Labyrinth.isTouchingLabyrinth;
 public class Main extends World {
     GreenfootImage background;
     GreenfootImage image;
+    GreenfootImage wallTexture;
     int fov = 120;
     int resolution = 100;
     Player player;
@@ -22,12 +23,13 @@ public class Main extends World {
     public Main() {
         super(600, 600, 1, false);
         image = new GreenfootImage("background.png");
-        image.scale(image.getWidth()*10, image.getHeight()*10);
+        wallTexture = new GreenfootImage("wallTexture.png");
+        image.scale(image.getWidth() * 10, image.getHeight() * 10);
         background = getBackground();
         init();
     }
 
-    private int castRay(int rotation) {
+    private int castRay(int rotation, int i) {
         int steps = 1;
         int distance = 0;
         double x = player.getX();
@@ -49,6 +51,13 @@ public class Main extends World {
 //        background.getFont().deriveFont(30);
 //        background.drawString(distance + "", 0, 30);
 //        drawRay((int) x, (int) y);
+        Color color = new Color((int) (i * 1.5), i, (int) (255 - (255 * (distance / 1000.0))));
+        background.setColor(color);
+        int drawHeight = 4000 / (distance + 1);
+        for (int j = 0; j < getWidth() / fov; j++) {
+//                background.drawLine((getWidth() / fov * i) + j, (getHeight() / 2) - (drawHeight / 2), (getWidth() / fov * i) + j, (getHeight() / 2) + (drawHeight / 2));
+            drawWallLine((getWidth() / fov * i) + j, drawHeight, (int) x, (int) y, distance);
+        }
         return distance;
     }
 
@@ -73,15 +82,29 @@ public class Main extends World {
         generateBackground();
         int rotation = player.getRotation() - (fov / 2) - 90;
         for (int i = 0; i < fov; i++) {
-            int distance = castRay(rotation + i);
-            Color color = new Color((int)(i*1.5), i, (int) (255 - (255 * (distance / 1000.0))));
-            background.setColor(color);
-            int drawHeight = 4000 / (distance + 1);
-            for (int j = 0; j < getWidth() / fov; j++) {
-                background.drawLine((getWidth() / fov * i) + j, (getHeight() / 2) - (drawHeight / 2), (getWidth() / fov * i) + j, (getHeight() / 2) + (drawHeight / 2));
-            }
+            castRay(rotation + i, i);
+
         }
     }
+
+    private void drawWallLine(int x, int height, int dx, int dy, int distance) {
+        for (int i = 0; i < height; i++) {
+            int y = (getHeight() / 2) - (height / 2) + i;
+            if (y < 0 || y > getHeight()) {
+                break;
+            }
+            int scale = image.getWidth() / wallTexture.getWidth();
+            int verticalShadow = (int) (255 * (i / (height * 1.0)));
+            int distanceShadow = (int) (255 * (distance / 1000.0));
+            Color textureColor = wallTexture.getColorAt(((dx * scale) + (dy * scale)) / 2 % wallTexture.getWidth(), (i * wallTexture.getHeight()) / height);
+            int red = (textureColor.getRed() + verticalShadow + distanceShadow) / 3;
+            int green = (textureColor.getGreen() + verticalShadow + distanceShadow) / 3;
+            int blue = (textureColor.getBlue() + verticalShadow + distanceShadow) / 3;
+            Color color = new Color(red, green, blue);
+            background.setColorAt(x, y, color);
+        }
+    }
+
 
     public void act() {
         player.act();
