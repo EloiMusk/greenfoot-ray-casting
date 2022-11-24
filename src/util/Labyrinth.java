@@ -21,7 +21,7 @@ public class Labyrinth {
                     if (isTouching) {
                         break;
                     }
-                    if (color.getBlue() > 220 && color.getRed() < 10 && color.getGreen() < 10) {
+                    if (color.getAlpha() > 100) {
                         isTouching = true;
                     }
                 }

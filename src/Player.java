@@ -31,7 +31,28 @@ public class Player {
     }
 
     private void setRotation(int rotation) {
-        this.rotation = rotation;
+        // First normalize
+        if (rotation >= 360) {
+            // Optimize the usual case: rotation has adjusted to a value greater than
+            // 360, but is still within the 360 - 720 bound.
+            if (rotation < 720) {
+                rotation -= 360;
+            } else {
+                rotation = rotation % 360;
+            }
+        } else if (rotation < 0) {
+            // Likwise, if less than 0, it's likely that the rotation was reduced by
+            // a small amount and so will be >= -360.
+            if (rotation >= -360) {
+                rotation += 360;
+            } else {
+                rotation = 360 + (rotation % 360);
+            }
+        }
+
+        if (this.rotation != rotation) {
+            this.rotation = rotation;
+        }
     }
 
     public int getRotation() {
@@ -108,15 +129,15 @@ public class Player {
         }
         if (Greenfoot.isKeyDown("a")) {
             turn(-5);
-            if (isAtEdge() || isTouchingLabyrinth(x, y, background)) {
-                turn(5);
-            }
+//            if (isAtEdge() || isTouchingLabyrinth(x, y, background)) {
+//                turn(5);
+//            }
         }
         if (Greenfoot.isKeyDown("d")) {
             turn(5);
-            if (isAtEdge() || isTouchingLabyrinth(x, y, background)) {
-                turn(-5);
-            }
+//            if (isAtEdge() || isTouchingLabyrinth(x, y, background)) {
+//                turn(-5);
+//            }
         }
     }
 }
