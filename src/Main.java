@@ -9,8 +9,8 @@ public class Main extends World {
     GreenfootImage background;
     GreenfootImage image;
     GreenfootImage wallTexture;
-    int fov = 100;
-    double resolution = 0.8;
+    int fov = 80;
+    double resolution = 1;
     int scanLines;
     Player player;
 //    int step = 1;
@@ -20,7 +20,7 @@ public class Main extends World {
     public Main() {
         super(600, 600, 1, false);
         image = new GreenfootImage("background.png");
-        wallTexture = new GreenfootImage("wallTexture.png");
+        wallTexture = new GreenfootImage("textures/wall/" + (Greenfoot.getRandomNumber(4) + 1) + ".png");
         image.scale(image.getWidth() * 8, image.getHeight() * 8);
         background = getBackground();
         init();
@@ -72,7 +72,6 @@ public class Main extends World {
         double B = (getHeight() * 3) / g;
         int drawScale = getHeight() * (getHeight() / 80);
         int drawHeight = (int) B;
-//        int drawHeight = (int) (B * drawScale);
         for (int j = 0; j < getWidth() / (scanLines / resolution); j++) {
             int txX = (int) ((resolution * i) + j);
             drawWallLine(txX, drawHeight, (int) x, (int) y, distance);
@@ -88,13 +87,13 @@ public class Main extends World {
             double scale = (double) image.getWidth() / (double) wallTexture.getWidth();
             int verticalShadow = (int) (255 * (i / (height * 1.0)));
             double distanceShadow = (distance / (image.getWidth() / 2.0) * 2.0);
-            Color textureColor = wallTexture.getColorAt(((int) (dx * scale) + (int) (dy * scale)) / 2 % wallTexture.getWidth(), i * wallTexture.getHeight() / height % wallTexture.getHeight());
+            Color textureColor = wallTexture.getColorAt((int) (((dx % wallTexture.getWidth()) + (dy % wallTexture.getHeight())) * scale) % wallTexture.getWidth(), i * wallTexture.getHeight() / height % wallTexture.getHeight());
             int verticalShadowIntensity = 3;
             int distanceShadowIntensity = 3;
             int textureColorIntensity = 4;
-            int red = textureColor.getRed() - (int) (textureColor.getRed() * distanceShadow);
-            int green = textureColor.getGreen() - (int) (textureColor.getGreen() * distanceShadow);
-            int blue = textureColor.getBlue() - (int) (textureColor.getBlue() * distanceShadow);
+            int red = (int) (textureColor.getRed() - textureColor.getRed() * distanceShadow);
+            int green = (int) (textureColor.getGreen() - textureColor.getGreen() * distanceShadow);
+            int blue = (int) (textureColor.getBlue() - textureColor.getBlue() * distanceShadow);
             Color color = new Color(red, green, blue);
             background.setColorAt(x, y, color);
         }
