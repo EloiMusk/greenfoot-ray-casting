@@ -75,6 +75,28 @@ public class Main extends World {
         for (int j = 0; j < getWidth() / (scanLines / resolution); j++) {
             int txX = (int) ((resolution * i) + j);
             drawWallLine(txX, drawHeight, (int) x, (int) y, distance);
+            drawFloorLine((int) x, (int) y, distance, rotation);
+        }
+    }
+
+    private void drawFloorLine(int x, int y, double distance, double rotation) {
+        int playerX = player.getX();
+        int playerY = player.getY();
+        int playerHeight = 200;
+        for (int i = 0; i < distance; i++) {
+            int drawX = (int) (x + (Math.sin(Math.toRadians(rotation-90)) * i));
+            int drawY = (int) (y + (Math.cos(Math.toRadians(rotation-90)) * i));
+            if (drawX < image.getWidth() && drawX > 0 && drawY < image.getHeight() && drawY > 0) {
+                Color color = image.getColorAt(drawX, drawY);
+                int floorHeight = (int) (getHeight() - (getHeight() / distance * i));
+                int ceilingHeight = (int) (getHeight() / distance * i);
+                int floorColor = (int) (255 - (255 / distance * i));
+                int ceilingColor = (int) (255 - (255 / distance * i));
+                background.setColor(new Color(floorColor, floorColor, floorColor));
+                background.drawLine((int) (getWidth() / 2.0 + (drawX - playerX)), floorHeight, (int) (getWidth() / 2.0 + (drawX - playerX)), getHeight());
+                background.setColor(new Color(ceilingColor, ceilingColor, ceilingColor));
+                background.drawLine((int) (getWidth() / 2.0 + (drawX - playerX)), 0, (int) (getWidth() / 2.0 + (drawX - playerX)), ceilingHeight);
+            }
         }
     }
 
